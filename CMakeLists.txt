@@ -21,13 +21,12 @@ find_package(
 add_executable(
         skoll
         main.cpp
-        include/skoll/feed/client.hpp
-        include/skoll/feed/client.hpp
 )
 
 add_library(
         skoll_core
         src/feed/message.cpp
+        src/feed/client.cpp
 )
 
 set_target_properties(skoll PROPERTIES
