@@ -1,7 +1,12 @@
 {
-  "name" : "skoll",
-  "version-string" : "0.1.0",
-  "dependencies" : [ {
-    "name" : "nlohmann-json"
-  } ]
+  "name": "skoll",
+  "version-string": "0.1.0",
+  "dependencies": [
+    {
+      "name": "nlohmann-json"
+    },
+    {
+      "name": "ixwebsocket"
+    }
+  ]
 }

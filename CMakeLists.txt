@@ -12,9 +12,17 @@ find_package(
         REQUIRED
 )
 
+find_package(
+        ixwebsocket
+        CONFIG
+        REQUIRED
+)
+
 add_executable(
         skoll
         main.cpp
+        include/skoll/feed/client.hpp
+        include/skoll/feed/client.hpp
 )
 
 add_library(
@@ -45,6 +53,8 @@ target_link_libraries(
         skoll_core
         PRIVATE
         nlohmann_json::nlohmann_json
+        PUBLIC
+        ixwebsocket::ixwebsocket
 )
 
 # the skoll executable requires skoll_core
