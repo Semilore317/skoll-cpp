@@ -11,7 +11,8 @@
 #include <string_view>
 
 namespace skoll::feed {
-    namespace { // private hack for non-class files
+    namespace {
+        // private hack for non-class files
         using Json = nlohmann::json;
 
         Side parse_side(const Json &value) {
@@ -115,49 +116,49 @@ namespace skoll::feed {
             };
         }
 
-        TradeMessage parse_trade(const Json& value) {
+        TradeMessage parse_trade(const Json &value) {
             return TradeMessage{
                 .security_id =
-                    value.at("securityId").get<SecurityId>(),
+                value.at("securityId").get<SecurityId>(),
 
                 .bid_order_id =
-                    value.at("bidOrderId").get<OrderId>(),
+                value.at("bidOrderId").get<OrderId>(),
 
                 .ask_order_id =
-                    value.at("askOrderId").get<OrderId>(),
+                value.at("askOrderId").get<OrderId>(),
 
                 .price =
-                    value.at("price").get<Price>(),
+                value.at("price").get<Price>(),
 
                 .quantity =
-                    parse_quantity(value.at("quantity")),
+                parse_quantity(value.at("quantity")),
 
                 .filled_at =
-                    value.at("filledAt").get<std::string>(),
+                value.at("filledAt").get<std::string>(),
 
                 .aggressor_side =
-                    parse_side(value.at("aggressorSide"))
+                parse_side(value.at("aggressorSide"))
             };
         }
 
         MarketTradeMessage parse_market_trade(
-            const Json& value
+            const Json &value
         ) {
             return MarketTradeMessage{
                 .security_id =
-                    value.at("securityId").get<SecurityId>(),
+                value.at("securityId").get<SecurityId>(),
 
                 .price =
-                    parse_observed_price(value.at("price")),
+                parse_observed_price(value.at("price")),
 
                 .quantity =
-                    parse_quantity(value.at("quantity")),
+                parse_quantity(value.at("quantity")),
 
                 .occurred_at =
-                    value.at("occurredAt").get<std::string>(),
+                value.at("occurredAt").get<std::string>(),
 
                 .aggressor_side =
-                    parse_side(value.at("aggressorSide"))
+                parse_side(value.at("aggressorSide"))
             };
         }
     }
@@ -183,9 +184,9 @@ namespace skoll::feed {
             throw DecodeError(
                 "unsupported message type `" + type + "`"
             );
-        }catch (const DecodeError&) {
+        } catch (const DecodeError &) {
             throw; // preserve errors deliberately
-        }catch (const Json::exception& error) {
+        } catch (const Json::exception &error) {
             // convert nlohmann::Json errors into public decoder-specific exception
             throw DecodeError(
                 "Invalid market-data JSON" + std::string{error.what()}
