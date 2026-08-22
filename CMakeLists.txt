@@ -40,8 +40,16 @@ target_compile_features(
         cxx_std_20
 )
 
+# skoll_core requires nlohmann_json
 target_link_libraries(
         skoll_core
         PRIVATE
         nlohmann_json::nlohmann_json
+)
+
+# the skoll executable requires skoll_core
+target_link_libraries(
+        skoll
+        PRIVATE
+        skoll_core
 )
