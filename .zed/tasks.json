@@ -1,0 +1,20 @@
+[
+  {
+    "label": "Build Sköll",
+    "command": "call \"C:\\Program Files (x86)\\Microsoft Visual Studio\\18\\BuildTools\\Common7\\Tools\\VsDevCmd.bat\" -arch=x64 && \"C:\\Program Files\\JetBrains\\CLion 2026.1.4\\bin\\cmake\\win\\x64\\bin\\cmake.exe\" --build cmake-build-debug --target skoll",
+    "shell": {
+      "program": "cmd.exe"
+    },
+    "cwd": "$ZED_WORKTREE_ROOT",
+    "save": "all",
+    "reveal": "always"
+  },
+  {
+    "label": "Run Sköll",
+    "command": ".\\cmake-build-debug\\skoll.exe",
+    "shell": {
+      "program": "cmd.exe"
+    },
+    "cwd": "$ZED_WORKTREE_ROOT"
+  }
+]
