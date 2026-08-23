@@ -40,12 +40,18 @@ namespace skoll {
         std::optional<std::string> capture_path;
         if(values.contains("CAPTURE_PATH") && !values.at("CAPTURE_PATH").empty())
             capture_path = values.at("CAPTURE_PATH");
-        
+       
+        std::optional<std::string> replay_path;
+        if(values.contains("REPLAY_PATH") && !values.at("REPLAY_PATH").empty())
+            replay_path = values.at("REPLAY_PATH");
+
         return Config{
             .ws_url = values.at("WS_URL"),
             .security_id = static_cast<SecurityId>(
                 std::stoi(values.at("SECURITY_ID")) //string TO integer
             ),
+            .capture_path = capture_path,
+            .replay_path = replay_path
         };
     }
 }

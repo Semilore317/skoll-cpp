@@ -10,6 +10,7 @@ namespace skoll {
         std::string ws_url;
         SecurityId security_id;
         std::optional<std::string> capture_path;
+        std::optional<std::string> replay_path;
     };
 
     Config load_config(const std::string &path);

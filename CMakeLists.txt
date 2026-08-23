@@ -31,6 +31,7 @@ add_library(
         src/feed/message.cpp
         src/feed/client.cpp
         src/feed/capture.cpp
+        src/feed/replay.cpp
 )
 
 set_target_properties(skoll PROPERTIES
