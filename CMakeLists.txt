@@ -25,6 +25,7 @@ add_executable(
 
 add_library(
         skoll_core
+        src/config/config.cpp
         src/feed/message.cpp
         src/feed/client.cpp
 )
@@ -55,6 +56,7 @@ target_link_libraries(
         PUBLIC
         ixwebsocket::ixwebsocket
 )
+
 
 # the skoll executable requires skoll_core
 target_link_libraries(

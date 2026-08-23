@@ -36,3 +36,6 @@ desktop.ini
 # Feed recordings, except the committed sample
 *.jsonl
 !data/sample-session.jsonl
+
+# Environment Variables
+.env
