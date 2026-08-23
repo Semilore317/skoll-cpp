@@ -18,6 +18,11 @@ namespace skoll::feed {
     {
         web_socket_.setUrl(url_);
 
+        ix::WebSocketHttpHeaders headers;
+        headers["origin"] = "http://localhost:4200";
+        headers["protocol"] = "websocket";
+
+        web_socket_.setExtraHeaders(headers);
         web_socket_.setOnMessageCallback(
             // when ixwebsocket gives a message,
             // call THIS client object's handle_message function to handle it
@@ -64,7 +69,7 @@ namespace skoll::feed {
 
     void Client::subscribe() {
         const Json request = {
-            {"type", "subscribe"},
+            {"action", "subscribe"},
             {"securityId", security_id_}
         };
 
