@@ -30,6 +30,7 @@ add_library(
         src/config/config.cpp
         src/feed/message.cpp
         src/feed/client.cpp
+        src/feed/capture.cpp
 )
 
 set_target_properties(skoll PROPERTIES
