@@ -12,9 +12,9 @@ namespace skoll::execution {
         std::string side_to_string(const Side side) {
             switch (side) {
             case Side::buy:
-                return "buy";
+                return "Buy";
             case Side::sell:
-                return "sell";
+                return "Sell";
             }
 
             throw ExecutionError("unknown side");
@@ -44,7 +44,7 @@ namespace skoll::execution {
         const Quantity quantity
     ) const {
         const nlohmann::json request = {
-            {"security_id", security_id},
+            {"securityId", security_id},
             {"username", username_},
             {"side", side_to_string(side)},
             {"price", price},
@@ -83,8 +83,8 @@ namespace skoll::execution {
             const auto json = nlohmann::json::parse(response->body);
 
             OrderAck ack;
-            ack.order_id = json.at("order_id").get<OrderId>();
-            ack.matched = json.at("match").get<bool>();
+            ack.order_id = json.at("orderId").get<OrderId>();
+            ack.matched = json.at("matched").get<bool>();
 
             for (const auto &fill : json.at("fills")) {
                 ack.fills.push_back({
