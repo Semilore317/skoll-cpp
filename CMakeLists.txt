@@ -12,6 +12,12 @@ find_package(
         REQUIRED
 )
 
+find_package(
+        ixwebsocket
+        CONFIG
+        REQUIRED
+)
+
 add_executable(
         skoll
         main.cpp
@@ -19,7 +25,9 @@ add_executable(
 
 add_library(
         skoll_core
+        src/config/config.cpp
         src/feed/message.cpp
+        src/feed/client.cpp
 )
 
 set_target_properties(skoll PROPERTIES
@@ -45,7 +53,17 @@ target_link_libraries(
         skoll_core
         PRIVATE
         nlohmann_json::nlohmann_json
+        PUBLIC
+        ixwebsocket::ixwebsocket
 )
+
+if (WIN32)
+    target_link_libraries(
+            skoll_core
+            PRIVATE
+            bcrypt
+    )
+endif ()
 
 # the skoll executable requires skoll_core
 target_link_libraries(
