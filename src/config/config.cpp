@@ -1,6 +1,9 @@
 #include "skoll/config/config.hpp"
 
+#include <algorithm>
 #include <fstream>
+#include <optional>
+#include <string>
 #include <unordered_map>
 #include <stdexcept>
 
@@ -18,7 +21,7 @@ namespace skoll {
             if (line.empty() || line[0] == '#')
                 continue;
 
-            const auto separator = line.find("=");
+            const auto separator = line.find('=');
 
             if (separator == std::string::npos) // ::npos --> not a position in string
                 continue;
@@ -35,11 +38,16 @@ namespace skoll {
         if (!values.contains("SECURITY_ID"))
             throw std::runtime_error("could not find SECURITY_ID in config file");
 
+        std::optional<std::string> capture_path;
+        if(values.contains("CAPTURE_PATH") && !values.at("CAPTURE_PATH").empty())
+            capture_path = values.at("CAPTURE_PATH");
+        
         return Config{
             .ws_url = values.at("WS_URL"),
             .security_id = static_cast<SecurityId>(
                 std::stoi(values.at("SECURITY_ID")) //string TO integer
             ),
+            .capture_path = std::move(capture_path)
         };
     }
 }

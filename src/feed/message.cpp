@@ -7,8 +7,8 @@
 #include <limits>
 #include <optional>
 #include <string>
-#include <vector>
 #include <string_view>
+#include <vector>
 
 namespace skoll::feed {
     namespace {
@@ -66,14 +66,12 @@ namespace skoll::feed {
                 throw DecodeError("book levels must be an array");
 
             std::vector<Level> levels;
-            levels.reserve(values.size()); // reserve allocates more space while the vector is still empty
+            levels.reserve(
+                values.size()); // reserve allocates more space while the vector is still empty
 
-            for (const auto &value: values) {
-                levels.push_back(
-                    Level{
-                        .price = value.at("price").get<Price>(),
-                        .quantity = parse_level_quantity(value.at("quantity"))
-                    });
+            for (const auto &value : values) {
+                levels.push_back(Level{.price = value.at("price").get<Price>(),
+                                       .quantity = parse_level_quantity(value.at("quantity"))});
             }
 
             return levels;
@@ -98,9 +96,7 @@ namespace skoll::feed {
                 throw DecodeError("Trade price has more than two digits for cents");
             }
 
-            return ObservedPrice{
-                static_cast<std::int64_t>(rounded)
-            };
+            return ObservedPrice{static_cast<std::int64_t>(rounded)};
         }
 
         BookMessage parse_book(const Json &value) {
@@ -117,58 +113,37 @@ namespace skoll::feed {
         }
 
         TradeMessage parse_trade(const Json &value) {
-            return TradeMessage{
-                .security_id =
-                value.at("securityId").get<SecurityId>(),
+            return TradeMessage{.security_id = value.at("securityId").get<SecurityId>(),
 
-                .bid_order_id =
-                value.at("bidOrderId").get<OrderId>(),
+                                .bid_order_id = value.at("bidOrderId").get<OrderId>(),
 
-                .ask_order_id =
-                value.at("askOrderId").get<OrderId>(),
+                                .ask_order_id = value.at("askOrderId").get<OrderId>(),
 
-                .price =
-                value.at("price").get<Price>(),
+                                .price = value.at("price").get<Price>(),
 
-                .quantity =
-                parse_quantity(value.at("quantity")),
+                                .quantity = parse_quantity(value.at("quantity")),
 
-                .filled_at =
-                value.at("filledAt").get<std::string>(),
+                                .filled_at = value.at("filledAt").get<std::string>(),
 
-                .aggressor_side =
-                parse_side(value.at("aggressorSide"))
-            };
+                                .aggressor_side = parse_side(value.at("aggressorSide"))};
         }
 
-        MarketTradeMessage parse_market_trade(
-            const Json &value
-        ) {
-            return MarketTradeMessage{
-                .security_id =
-                value.at("securityId").get<SecurityId>(),
+        MarketTradeMessage parse_market_trade(const Json &value) {
+            return MarketTradeMessage{.security_id = value.at("securityId").get<SecurityId>(),
 
-                .price =
-                parse_observed_price(value.at("price")),
+                                      .price = parse_observed_price(value.at("price")),
 
-                .quantity =
-                parse_quantity(value.at("quantity")),
+                                      .quantity = parse_quantity(value.at("quantity")),
 
-                .occurred_at =
-                value.at("occurredAt").get<std::string>(),
+                                      .occurred_at = value.at("occurredAt").get<std::string>(),
 
-                .aggressor_side =
-                parse_side(value.at("aggressorSide"))
-            };
+                                      .aggressor_side = parse_side(value.at("aggressorSide"))};
         }
-    }
+    } // namespace
 
     Message decode_message(std::string_view raw_message) {
         try {
-            const auto value = Json::parse(
-                raw_message.begin(),
-                raw_message.end()
-            );
+            const auto value = Json::parse(raw_message.begin(), raw_message.end());
 
             const auto type = value.at("type").get<std::string>();
 
@@ -181,16 +156,12 @@ namespace skoll::feed {
             if (type == "marketTrade")
                 return parse_market_trade(value);
 
-            throw DecodeError(
-                "unsupported message type `" + type + "`"
-            );
+            throw DecodeError("unsupported message type `" + type + "`");
         } catch (const DecodeError &) {
             throw; // preserve errors deliberately
         } catch (const Json::exception &error) {
             // convert nlohmann::Json errors into public decoder-specific exception
-            throw DecodeError(
-                "Invalid market-data JSON" + std::string{error.what()}
-            );
+            throw DecodeError("Invalid market-data JSON" + std::string{error.what()});
         }
     }
-}
+} // namespace skoll::feed
