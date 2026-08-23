@@ -33,6 +33,7 @@ add_library(
         src/feed/capture.cpp
         src/feed/replay.cpp
         src/book/replica.cpp
+        src/execution/client.cpp
         src/strategy/maker.cpp
         src/portfolio/position.cpp
 )
