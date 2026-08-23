@@ -1,19 +1,23 @@
 #include "skoll/portfolio/position.hpp"
 
 namespace skoll::portfolio {
-    void Position::apply_fill(const Side side, const Price price, const Quantity quantity) {
+    void Position::apply_fill(
+        const Side side,
+        const Price price,
+        const Quantity quantity
+    ) {
         const auto signed_quantity = static_cast<std::int64_t>(quantity);
-        const auto value = signed_quantity * static_cast<std::int64_t>(price);
-
-        if(side == Side::buy) {
+        const auto value =
+            static_cast<std::int64_t>(price) * signed_quantity;
+    
+        if (side == Side::buy) {
             quantity_ += signed_quantity;
-            cash_ += value;
+            cash_ -= value;
         } else {
             quantity_ -= signed_quantity;
-            cash_ -= value;
+            cash_ += value;
         }
     }
-
     std::int64_t Position::quantity() const{
         return quantity_;
     }
