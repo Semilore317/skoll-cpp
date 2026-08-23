@@ -3,6 +3,7 @@
 
 #include "skoll/config/config.hpp"
 #include "skoll/feed/client.hpp"
+#include "skoll/feed/message.hpp"
 
 #include <ixwebsocket/IXNetSystem.h>
 
@@ -18,7 +19,8 @@ int main() {
             ws_url,
             security_id,
             [](const std::string &message) {
-                std::cout << message << "\n";
+                const auto decoded = skoll::feed::decode_message(message);
+                std::cout << "decoded message successfully!!!" << "\n";
             }
         );
 
