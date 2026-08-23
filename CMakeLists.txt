@@ -22,6 +22,7 @@ add_executable(
         tests/feed/replay_tests.cpp
         tests/book/replica_tests.cpp
         tests/strategy/maker_tests.cpp
+        tests/portfolio/position_tests.cpp
 )
 
 add_library(
@@ -32,6 +33,8 @@ add_library(
         src/feed/capture.cpp
         src/feed/replay.cpp
         src/book/replica.cpp
+        src/strategy/maker.cpp
+        src/portfolio/position.cpp
 )
 
 set_target_properties(skoll PROPERTIES
