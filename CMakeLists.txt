@@ -20,6 +20,7 @@ add_executable(
 add_executable(
         skoll_tests
         tests/feed/replay_tests.cpp
+        tests/book/replica_tests.cpp
 )
 
 add_library(
@@ -29,6 +30,7 @@ add_library(
         src/feed/client.cpp
         src/feed/capture.cpp
         src/feed/replay.cpp
+        src/book/replica.cpp
 )
 
 set_target_properties(skoll PROPERTIES
