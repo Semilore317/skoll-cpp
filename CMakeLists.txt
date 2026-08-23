@@ -20,6 +20,7 @@ add_executable(
 add_executable(
         skoll_tests
         tests/feed/replay_tests.cpp
+        tests/book/replica_tests.cpp
 )
 
 add_library(
