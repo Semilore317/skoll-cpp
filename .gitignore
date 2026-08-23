@@ -39,3 +39,6 @@ desktop.ini
 
 # Environment Variables
 .env
+
+# Captures
+captures/*.jsonl

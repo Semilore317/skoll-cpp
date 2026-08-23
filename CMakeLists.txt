@@ -8,21 +8,18 @@ project(
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-find_package(
-        nlohmann_json
-        CONFIG
-        REQUIRED
-)
-
-find_package(
-        ixwebsocket
-        CONFIG
-        REQUIRED
-)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(ixwebsocket CONFIG REQUIRED)
+find_package(doctest CONFIG REQUIRED)
 
 add_executable(
         skoll
         main.cpp
+)
+
+add_executable(
+        skoll_tests
+        tests/feed/replay_tests.cpp
 )
 
 add_library(
@@ -30,6 +27,8 @@ add_library(
         src/config/config.cpp
         src/feed/message.cpp
         src/feed/client.cpp
+        src/feed/capture.cpp
+        src/feed/replay.cpp
 )
 
 set_target_properties(skoll PROPERTIES
@@ -72,4 +71,11 @@ target_link_libraries(
         skoll
         PRIVATE
         skoll_core
+)
+
+target_link_libraries(
+        skoll_tests
+        PRIVATE
+        skoll_core
+        doctest::doctest
 )
