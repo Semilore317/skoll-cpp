@@ -57,6 +57,13 @@ target_link_libraries(
         ixwebsocket::ixwebsocket
 )
 
+if (WIN32)
+    target_link_libraries(
+            skoll_core
+            PRIVATE
+            bcrypt
+    )
+endif ()
 
 # the skoll executable requires skoll_core
 target_link_libraries(
