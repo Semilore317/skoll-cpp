@@ -8,14 +8,11 @@
 namespace skoll::feed {
     using Json = nlohmann::json;
 
-    Client::Client(
-        std::string url,
-        SecurityId security_id,
-        MessageHandler message_handler
-    ) : url_(std::move(url)),
-        security_id_(security_id),
-        message_handler_(std::move(message_handler)) //ctor
-    {
+    Client::Client(std::string url, SecurityId security_id, MessageHandler message_handler,
+                   CaptureHandler capture_handler)
+        : url_(std::move(url)), security_id_(security_id),
+          message_handler_(std::move(message_handler)),
+          capture_handler_(std::move(capture_handler)) {
         web_socket_.setUrl(url_);
 
         ix::WebSocketHttpHeaders headers;
@@ -32,10 +29,7 @@ namespace skoll::feed {
              *  body
              * }
              */
-            [this](const ix::WebSocketMessagePtr &message) {
-                handle_message(message);
-            }
-        );
+            [this](const ix::WebSocketMessagePtr &message) { handle_message(message); });
     }
 
     void Client::run() {
@@ -50,32 +44,30 @@ namespace skoll::feed {
 
     void Client::handle_message(const ix::WebSocketMessagePtr &message) {
         if (message->type == ix::WebSocketMessageType::Open) {
+
             std::cout << "connected to market data feed \n";
             subscribe();
             return;
         }
 
         if (message->type == ix::WebSocketMessageType::Message) {
+            if (capture_handler_)
+                capture_handler_(message->str);
+
             message_handler_(message->str);
             return;
         }
 
         if (message->type == ix::WebSocketMessageType::Error)
-            std::cerr
-                    << "market data error: "
-                    << message->errorInfo.reason
-                    << '\n';
+            std::cerr << "market data error: " << message->errorInfo.reason << '\n';
     }
 
     void Client::subscribe() {
-        const Json request = {
-            {"action", "subscribe"},
-            {"securityId", security_id_}
-        };
+        const Json request = {{"action", "subscribe"}, {"securityId", security_id_}};
 
         const auto result = web_socket_.send(request.dump());
 
         if (!result.success)
             std::cerr << "failed to send subscription \n";
     }
-}
+} // namespace skoll::feed
