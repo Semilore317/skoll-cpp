@@ -1,5 +1,4 @@
 #include <fstream>
-#include <functional>
 #include <ios>
 #include <skoll/feed/capture.hpp>
 #include <stdexcept>

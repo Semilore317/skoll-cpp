@@ -1,6 +1,5 @@
 #include "skoll/config/config.hpp"
 
-#include <algorithm>
 #include <fstream>
 #include <optional>
 #include <string>
@@ -47,7 +46,6 @@ namespace skoll {
             .security_id = static_cast<SecurityId>(
                 std::stoi(values.at("SECURITY_ID")) //string TO integer
             ),
-            .capture_path = std::move(capture_path)
         };
     }
 }
