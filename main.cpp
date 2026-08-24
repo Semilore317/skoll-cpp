@@ -20,9 +20,9 @@
 #endif
 
 int main() {
-    #ifdef _WIN32
+#ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
-    #endif
+#endif
     try {
         std::cout << "Sköll v0.1\n";
 
