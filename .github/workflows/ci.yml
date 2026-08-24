@@ -2,41 +2,51 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
   pull_request:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   format:
     name: Format
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install clang-format
-        run: sudo apt update && sudo apt-get install -y clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format
 
       - name: Check formatting
-        run: | 
-            find include src tests -type f \( -name "*.cpp" -o -name "*.hpp" \) \
+        run: |
+          find include src tests -type f \( -name "*.cpp" -o -name "*.hpp" \) \
             -exec clang-format --dry-run --Werror {} +
-            clang-format --dry-run --Werror main.cpp
-build:
-  name: Windows build and tests
-  runs-on: windows-latest
-  steps:
-    - name: Configure
-      uses: actions/setup-cmake@v4
+          clang-format --dry-run --Werror main.cpp
 
-    - name: Configure
-      shell: pwsh
-      run: |
-           cmake -S . -B build `
+  build:
+    name: Windows build and tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S . -B build `
+            -DCMAKE_BUILD_TYPE=Release `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
 
-    - name: Build
-      run: cmake --build build --config Release
+      - name: Build
+        shell: pwsh
+        run: cmake --build build --config Release
 
-    - name: Run tests
-      run: .\build\Release\skoll-tests.exe
+      - name: Run tests
+        shell: pwsh
+        run: .\build\Release\skoll_tests.exe
