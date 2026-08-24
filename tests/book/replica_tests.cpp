@@ -26,8 +26,8 @@ TEST_CASE("replica applies book snapshot") {
     message.ask = 105;
     message.spread = 5;
 
-    message.bids = { {100, 10}, {99, 20}};
-    message.asks = { {105, 15}, {106, 25} };
+    message.bids = {{100, 10}, {99, 20}};
+    message.asks = {{105, 15}, {106, 25}};
 
     replica.apply(message);
 
@@ -53,7 +53,7 @@ TEST_CASE("replica applies book snapshot") {
     CHECK(replica.asks()[1].quantity == 25);
 }
 
-TEST_CASE("replica replaces previous snapshot"){
+TEST_CASE("replica replaces previous snapshot") {
     skoll::book::Replica replica(1);
 
     skoll::feed::BookMessage first;
@@ -61,7 +61,7 @@ TEST_CASE("replica replaces previous snapshot"){
     first.bid = 100;
     first.ask = 105;
     first.spread = 5;
-    first.bids = {{100,10}, {99,20}};
+    first.bids = {{100, 10}, {99, 20}};
     first.asks = {{105, 15}, {106, 25}};
 
     replica.apply(first);
@@ -71,11 +71,11 @@ TEST_CASE("replica replaces previous snapshot"){
     second.bid = 101;
     second.ask = 103;
     second.spread = 2;
-    second.bids = {{101,30}};
+    second.bids = {{101, 30}};
     second.asks = {{103, 40}};
 
     replica.apply(second);
-    
+
     CHECK(*replica.best_bid() == 101);
     CHECK(*replica.best_ask() == 103);
     CHECK(*replica.spread() == 2);
@@ -90,7 +90,7 @@ TEST_CASE("replica replaces previous snapshot"){
     CHECK(replica.asks()[0].quantity == 40);
 }
 
-TEST_CASE("replica rejects book for different security"){
+TEST_CASE("replica rejects book for different security") {
     skoll::book::Replica replica(1);
 
     skoll::feed::BookMessage message;
@@ -98,6 +98,5 @@ TEST_CASE("replica rejects book for different security"){
 
     CHECK_THROWS_AS(
         replica.apply(message),
-        std::invalid_argument
-    );
+        std::invalid_argument);
 }

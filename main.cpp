@@ -89,8 +89,7 @@ int main() {
                             config.security_id,
                             intent.side,
                             intent.price,
-                            intent.quantity
-                        );
+                            intent.quantity);
 
                         own_orders[ack.order_id] = intent.side;
                         last_price = intent.price;
@@ -125,8 +124,7 @@ int main() {
                     position.apply_fill(
                         skoll::Side::buy,
                         trade->price,
-                        trade->quantity
-                    );
+                        trade->quantity);
 
                     last_bid.reset();
                     print_position();
@@ -138,8 +136,7 @@ int main() {
                     position.apply_fill(
                         skoll::Side::sell,
                         trade->price,
-                        trade->quantity
-                    );
+                        trade->quantity);
 
                     last_ask.reset();
                     print_position();
@@ -162,8 +159,7 @@ int main() {
         if (config.replay_path) {
             skoll::feed::Replay replay(
                 *config.replay_path,
-                message_handler
-            );
+                message_handler);
 
             replay.run();
             return 0;
@@ -175,8 +171,7 @@ int main() {
             config.ws_url,
             config.security_id,
             message_handler,
-            std::move(capture_handler)
-        );
+            std::move(capture_handler));
 
         client.run();
 

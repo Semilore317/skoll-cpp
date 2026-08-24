@@ -19,4 +19,4 @@ namespace skoll {
     struct ObservedPrice {
         std::int64_t hundredths_of_a_cent{};
     };
-}
+} // namespace skoll

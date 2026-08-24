@@ -15,4 +15,4 @@ namespace skoll::feed {
         std::string path_;
         MessageHandler message_handler_;
     };
-} 
+} // namespace skoll::feed
