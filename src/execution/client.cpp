@@ -41,15 +41,13 @@ namespace skoll::execution {
         const SecurityId security_id,
         const Side side,
         const Price price,
-        const Quantity quantity
-    ) const {
+        const Quantity quantity) const {
         const nlohmann::json request = {
             {"securityId", security_id},
             {"username", username_},
             {"side", side_to_string(side)},
             {"price", price},
-            {"quantity", quantity}
-        };
+            {"quantity", quantity}};
 
         ix::HttpClient http_client;
 
@@ -62,21 +60,18 @@ namespace skoll::execution {
         const auto response = http_client.post(
             base_url_ + "/orders",
             request.dump(),
-            args
-        );
+            args);
 
         if (response->errorCode != ix::HttpErrorCode::Ok) {
             throw ExecutionError(
-                "order request failed: " + response->errorMsg
-            );
+                "order request failed: " + response->errorMsg);
         }
 
         if (response->statusCode != 201) {
             throw ExecutionError(
                 "order request returned HTTP " +
                 std::to_string(response->statusCode) + ": " +
-                response->body
-            );
+                response->body);
         }
 
         try {
@@ -87,19 +82,16 @@ namespace skoll::execution {
             ack.matched = json.at("matched").get<bool>();
 
             for (const auto &fill : json.at("fills")) {
-                ack.fills.push_back({
-                    fill.at("bidOrderId").get<OrderId>(),
-                    fill.at("askOrderId").get<OrderId>(),
-                    fill.at("price").get<Price>(),
-                    fill.at("quantity").get<Quantity>()
-                });
+                ack.fills.push_back({fill.at("bidOrderId").get<OrderId>(),
+                                     fill.at("askOrderId").get<OrderId>(),
+                                     fill.at("price").get<Price>(),
+                                     fill.at("quantity").get<Quantity>()});
             }
 
             return ack;
         } catch (const nlohmann::json::exception &exception) {
             throw ExecutionError(
-                "invalid order response: " + std::string(exception.what())
-            );
+                "invalid order response: " + std::string(exception.what()));
         }
     }
 } // namespace skoll::execution

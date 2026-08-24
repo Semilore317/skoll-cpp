@@ -3,9 +3,9 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
-#include <string_view>
 
 #include "../types.hpp"
 
@@ -49,20 +49,17 @@ namespace skoll::feed {
         Side aggressor_side{};
     };
 
-
     // since it tracks only one of each at any point in time
     using Message = std::variant<
         BookMessage,
         TradeMessage,
-        MarketTradeMessage
-    >;
-
+        MarketTradeMessage>;
 
     class DecodeError : public std::runtime_error {
-    public:
+      public:
         using std::runtime_error::runtime_error;
     };
 
     [[nodiscard]] // tells the compiler to warn if i ignore it
     Message decode_message(std::string_view raw_message);
-}
+} // namespace skoll::feed

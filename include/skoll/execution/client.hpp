@@ -30,8 +30,8 @@ namespace skoll::execution {
 
         [[nodiscard]]
         OrderAck place_order(
-            SecurityId security_id, 
-            Side side, 
+            SecurityId security_id,
+            Side side,
             Price price,
             Quantity quantity) const;
 

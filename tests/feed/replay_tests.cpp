@@ -25,8 +25,7 @@ TEST_CASE("replay preserves message order") {
         path,
         [&messages](const std::string &message) {
             messages.push_back(message);
-        }
-    );
+        });
 
     replay.run();
 
@@ -54,8 +53,7 @@ TEST_CASE("replay skips empty lines") {
         path,
         [&messages](const std::string &message) {
             messages.push_back(message);
-        }
-    );
+        });
 
     replay.run();
 
@@ -71,8 +69,7 @@ TEST_CASE("replay throws when file does not exist") {
         "nonexistent.jsonl",
         [](const std::string &) {
             // do nothing
-        }
-    );
+        });
 
     REQUIRE_THROWS_AS(replay.run(), std::runtime_error);
 }

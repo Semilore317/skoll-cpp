@@ -31,9 +31,8 @@ namespace skoll::book {
         std::optional<Price> best_ask_;
 
         std::optional<Price> spread_;
-        
+
         std::vector<feed::Level> bids_;
         std::vector<feed::Level> asks_;
-        
     };
 } // namespace skoll::book

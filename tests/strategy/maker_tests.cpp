@@ -42,6 +42,5 @@ TEST_CASE("maker does nothing without a complete market") {
 TEST_CASE("maker rejects zero quantity") {
     CHECK_THROWS_AS(
         skoll::strategy::Maker(0),
-        std::invalid_argument
-    );
+        std::invalid_argument);
 }

@@ -2,9 +2,9 @@
 
 #include <fstream>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <stdexcept>
 
 namespace skoll {
     Config load_config(const std::string &path) {
@@ -38,34 +38,33 @@ namespace skoll {
             throw std::runtime_error("could not find SECURITY_ID in config file");
 
         std::optional<std::string> capture_path;
-        if(values.contains("CAPTURE_PATH") && !values.at("CAPTURE_PATH").empty())
+        if (values.contains("CAPTURE_PATH") && !values.at("CAPTURE_PATH").empty())
             capture_path = values.at("CAPTURE_PATH");
-       
+
         std::optional<std::string> replay_path;
-        if(values.contains("REPLAY_PATH") && !values.at("REPLAY_PATH").empty())
+        if (values.contains("REPLAY_PATH") && !values.at("REPLAY_PATH").empty())
             replay_path = values.at("REPLAY_PATH");
 
-        if(!values.contains("REST_URL"))
+        if (!values.contains("REST_URL"))
             throw std::runtime_error("could not find REST_URL in config file");
 
-        if(!values.contains("USERNAME"))
+        if (!values.contains("USERNAME"))
             throw std::runtime_error("could not find USERNAME in config file");
 
-        if(!values.contains("MAKER_QUANTITY"))
+        if (!values.contains("MAKER_QUANTITY"))
             throw std::runtime_error("could not find MAKER_QUANTITY in config file");
-        
+
         return Config{
             .ws_url = values.at("WS_URL"),
             .security_id = static_cast<SecurityId>(
-                std::stoi(values.at("SECURITY_ID")) //string TO integer
-            ),
+                std::stoi(values.at("SECURITY_ID")) // string TO integer
+                ),
             .rest_url = values.at("REST_URL"),
             .username = values.at("USERNAME"),
             .maker_quantity = static_cast<Quantity>(
-                std::stoul(values.at("MAKER_QUANTITY")) //string to unsigned long
-            ),
+                std::stoul(values.at("MAKER_QUANTITY")) // string to unsigned long
+                ),
             .capture_path = capture_path,
-            .replay_path = replay_path
-        };
+            .replay_path = replay_path};
     }
-}
+} // namespace skoll
