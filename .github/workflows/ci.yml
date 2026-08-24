@@ -36,21 +36,23 @@ jobs:
     runs-on: windows-latest
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Configure
         shell: pwsh
         run: |
-          cmake -S . -B build -G Ninja `
-            -DCMAKE_BUILD_TYPE=Release `
+          cmake -S . -B build `
+            -G "Visual Studio 17 2022" `
+            -A x64 `
             -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
 
       - name: Build
         shell: pwsh
-        run: cmake --build build 
+        run: cmake --build build --config Release
 
       - name: Run tests
         shell: pwsh
-        run: .\build\Release\skoll-tests.exe
+        run: |
+          Get-ChildItem build -Recurse -Filter skoll_tests.exe
+          .\build\Release\skoll_tests.exe
