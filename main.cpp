@@ -15,7 +15,14 @@
 #include "skoll/portfolio/position.hpp"
 #include "skoll/strategy/maker.hpp"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 int main() {
+    #ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    #endif
     try {
         std::cout << "Sköll v0.1\n";
 
