@@ -14,6 +14,7 @@
 #include "skoll/feed/replay.hpp"
 #include "skoll/portfolio/position.hpp"
 #include "skoll/strategy/maker.hpp"
+#include "skoll/types.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -23,6 +24,7 @@ int main() {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
 #endif
+
     try {
         std::cout << "Sköll v0.1\n";
 
@@ -38,10 +40,29 @@ int main() {
             execution.emplace(config.rest_url, config.username);
         }
 
-        std::unordered_map<skoll::OrderId, skoll::Side> own_orders;
+        // represensts the currently resting quote for a single side
+        // we need the order id so it can be cancelled when the quote changes
+        struct ActiveQuote {
+            skoll::OrderId order_id{};
+            skoll::Price price{};
+        };
 
+        // this lets us correctly handle partial fills.
+        // it tracks the remaining quantity on each of Sköll's orders
+        std::unordered_map<skoll::OrderId, skoll::Quantity> own_orders;
+
+        /*
         std::optional<skoll::Price> last_bid;
         std::optional<skoll::Price> last_ask;
+        */
+
+        std::optional<ActiveQuote> active_bid;
+        std::optional<ActiveQuote> active_ask;
+
+        // replay does not submit real orders, so prices alone are enough
+        // to avoid repeatedly printing the same quote.
+        std::optional<skoll::Price> last_replay_bid;
+        std::optional<skoll::Price> last_replay_ask;
 
         auto print_position = [&]() {
             const auto bid = book.best_bid();
@@ -70,15 +91,17 @@ int main() {
                 const auto intents = maker.quote(book);
 
                 for (const auto &intent : intents) {
-                    auto &last_price =
-                        intent.side == skoll::Side::buy
-                            ? last_bid
-                            : last_ask;
-
-                    if (last_price && *last_price == intent.price)
-                        continue;
-
+                    // replay runs the same strategy path but does not submit
+                    // or cancel real orders.
                     if (!execution) {
+                        auto &last_price =
+                            intent.side == skoll::Side::buy
+                                ? last_replay_bid
+                                : last_replay_ask;
+
+                        if (last_price && *last_price == intent.price)
+                            continue;
+
                         std::cout
                             << "replay quote "
                             << (intent.side == skoll::Side::buy ? "buy " : "sell ")
@@ -91,15 +114,48 @@ int main() {
                         continue;
                     }
 
+                    // each side keeps track of its currently resting order.
+                    auto &active_quote =
+                        intent.side == skoll::Side::buy
+                            ? active_bid
+                            : active_ask;
+
+                    // the desired quote has not changed, so leave the
+                    // existing order resting.
+                    if (active_quote && active_quote->price == intent.price)
+                        continue;
+
                     try {
+                        // a quote already exists at another price.
+                        // cancel it before placing its replacement so that
+                        // stale Maker orders do not accumulate in Valkyrie.
+                        if (active_quote) {
+                            execution->cancel_order(
+                                config.security_id,
+                                active_quote->order_id);
+
+                            std::cout
+                                << "cancelled order "
+                                << active_quote->order_id
+                                << '\n';
+
+                            own_orders.erase(active_quote->order_id);
+                            active_quote.reset();
+                        }
+
                         const auto ack = execution->place_order(
                             config.security_id,
                             intent.side,
                             intent.price,
                             intent.quantity);
 
-                        own_orders[ack.order_id] = intent.side;
-                        last_price = intent.price;
+                        // remember both the remaining order quantity and
+                        // which order is currently quoting this side.
+                        own_orders[ack.order_id] = intent.quantity;
+
+                        active_quote = ActiveQuote{
+                            ack.order_id,
+                            intent.price};
 
                         std::cout
                             << "placed order "
@@ -125,7 +181,7 @@ int main() {
             if (const auto *trade =
                     std::get_if<skoll::feed::TradeMessage>(&message)) {
 
-                if (const auto bid = own_orders.find(trade->bid_order_id);
+                if (auto bid = own_orders.find(trade->bid_order_id);
                     bid != own_orders.end()) {
 
                     position.apply_fill(
@@ -133,11 +189,23 @@ int main() {
                         trade->price,
                         trade->quantity);
 
-                    last_bid.reset();
+                    // fully filled order is no longer an active quote.
+                    // else keep track of the quantity still resting.
+                    if (trade->quantity >= bid->second) {
+                        own_orders.erase(bid);
+
+                        if (active_bid &&
+                            active_bid->order_id == trade->bid_order_id) {
+                            active_bid.reset();
+                        }
+                    } else {
+                        bid->second -= trade->quantity;
+                    }
+
                     print_position();
                 }
 
-                if (const auto ask = own_orders.find(trade->ask_order_id);
+                if (auto ask = own_orders.find(trade->ask_order_id);
                     ask != own_orders.end()) {
 
                     position.apply_fill(
@@ -145,7 +213,18 @@ int main() {
                         trade->price,
                         trade->quantity);
 
-                    last_ask.reset();
+                    // same lifecycle handling for the resting ask.
+                    if (trade->quantity >= ask->second) {
+                        own_orders.erase(ask);
+
+                        if (active_ask &&
+                            active_ask->order_id == trade->ask_order_id) {
+                            active_ask.reset();
+                        }
+                    } else {
+                        ask->second -= trade->quantity;
+                    }
+
                     print_position();
                 }
             }

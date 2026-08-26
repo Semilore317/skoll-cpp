@@ -1,5 +1,7 @@
 #include "skoll/execution/client.hpp"
+#include "skoll/types.hpp"
 
+#include <ixwebsocket/IXHttp.h>
 #include <ixwebsocket/IXHttpClient.h>
 #include <nlohmann/json.hpp>
 
@@ -93,5 +95,35 @@ namespace skoll::execution {
             throw ExecutionError(
                 "invalid order response: " + std::string(exception.what()));
         }
+    }
+
+    void Client::cancel_order(
+        const SecurityId security_id,
+        const OrderId order_id) const {
+        ix::HttpClient http_client;
+
+        const auto args = http_client.createRequest();
+
+        // timeout in seconds
+        args->connectTimeout = 10;
+        args->transferTimeout = 10;
+
+        // reconstructs the valkyrie's deletion api exactly
+        const auto response = http_client.Delete(
+            base_url_ +
+                "/instruments/" + std::to_string(security_id) +
+                "/orders/" + std::to_string(order_id) +
+                "?username=" + username_,
+            args);
+
+        if (response->errorCode != ix::HttpErrorCode::Ok)
+            throw ExecutionError("cancel request failed: " + response->errorMsg);
+
+        // if we get a no content code, throw...
+        if (response->statusCode != 204)
+            throw ExecutionError(
+                "cancel request returned HTTP " +
+                std::to_string(response->statusCode) + ": " +
+                response->body);
     }
 } // namespace skoll::execution

@@ -12,8 +12,8 @@ namespace skoll::execution {
         Price price{};
         Quantity quantity{};
     };
-
     struct OrderAck {
+
         OrderId order_id{};
         bool matched{};
         std::vector<Fill> fills;
@@ -34,6 +34,10 @@ namespace skoll::execution {
             Side side,
             Price price,
             Quantity quantity) const;
+
+        void cancel_order(
+            SecurityId security_id,
+            OrderId order_id) const;
 
       private:
         std::string base_url_;
